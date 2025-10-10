@@ -412,13 +412,15 @@ def train(args, logger):
                     
                 with torch.no_grad():
                     batch_size, _, C, H, W = images.shape
-                    image_embeds = vision_encoder(images.reshape(-1, C, H, W)).detach()
+                    image_embeds = vision_encoder(images.reshape(-1, C, H, W)).detach()   #把图片嵌进去
                     image_embeds = image_embeds.reshape((batch_size, -1, vision_encoder.hidden_size))
 
-                    lang_attn_mask = batch["lang_attn_mask"]
+
+                    #语言嵌进去
+                    lang_attn_mask = batch["lang_attn_mask"]  
                     text_embeds = batch["lang_embeds"].to(dtype=weight_dtype) \
                         if args.precomp_lang_embed \
-                        else text_encoder(
+                        else text_encoder( 
                             input_ids=batch["input_ids"],
                             attention_mask=lang_attn_mask
                         )["last_hidden_state"].detach()

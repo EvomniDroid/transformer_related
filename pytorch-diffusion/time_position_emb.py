@@ -2,7 +2,7 @@ import torch
 from torch import nn 
 import math 
 from config import *
-
+#时刻不需要，需要的是让图片知道自己处于哪个扩散时刻
 class TimePositionEmbedding(nn.Module):
     def __init__(self,emb_size):
         super().__init__()

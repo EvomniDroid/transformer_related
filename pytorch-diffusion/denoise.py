@@ -26,11 +26,11 @@ def backward_denoise(model,batch_x_t,batch_cls):
             batch_t=torch.full((batch_x_t.size(0),),t).to(DEVICE) #[999,999,....]
             # 预测x_t时刻的噪音
             batch_predict_noise_t=model(batch_x_t,batch_t,batch_cls)
-            # 生成t-1时刻的图像
+            # 生成t-1时刻的图像 
             shape=(batch_x_t.size(0),1,1,1)
             batch_mean_t=1/torch.sqrt(alphas[batch_t].view(*shape))*  \
                 (
-                    batch_x_t-
+                    batch_x_t-   #原图 减去噪音图
                     (1-alphas[batch_t].view(*shape))/torch.sqrt(1-alphas_cumprod[batch_t].view(*shape))*batch_predict_noise_t
                 )
             if t!=0:

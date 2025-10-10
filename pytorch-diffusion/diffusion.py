@@ -1,3 +1,6 @@
+import os
+os.environ['KMP_DUPLICATE_LIB_OK'] = 'TRUE'
+
 import torch 
 from config import *
 from dataset import train_dataset,tensor_to_pil
@@ -31,7 +34,7 @@ if __name__=='__main__':
 
     batch_x=batch_x*2-1 # [0,1]像素值调整到[-1,1]之间,以便与高斯噪音值范围匹配
     batch_t=torch.randint(0,T,size=(batch_x.size(0),)).to(DEVICE)  # 每张图片随机生成diffusion步数
-    #batch_t=torch.tensor([5,100],dtype=torch.long)
+    # batch_t=torch.tensor([5,100],dtype=torch.long)
     print('batch_t:',batch_t)
     
     batch_x_t,batch_noise_t=forward_diffusion(batch_x,batch_t)

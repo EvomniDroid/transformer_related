@@ -1,3 +1,6 @@
+import os
+os.environ['KMP_DUPLICATE_LIB_OK'] = 'TRUE'
+
 from config import *
 from torch.utils.data import DataLoader
 from dataset import train_dataset
@@ -5,13 +8,10 @@ from unet import UNet
 from diffusion import forward_diffusion
 import torch 
 from torch import nn 
-import os 
 from torch.utils.tensorboard import SummaryWriter
 
 EPOCH=200
 BATCH_SIZE=400
-
-dataloader=DataLoader(train_dataset,batch_size=BATCH_SIZE,num_workers=4,persistent_workers=True,shuffle=True)   # 数据加载器
 
 try:
     model=torch.load('model.pt')
@@ -24,6 +24,9 @@ loss_fn=nn.L1Loss() # 损失函数(绝对值误差均值)
 writer = SummaryWriter()
 
 if __name__=='__main__':
+    # Windows 下使用 num_workers=0 避免多进程问题
+    dataloader=DataLoader(train_dataset,batch_size=BATCH_SIZE,num_workers=0,shuffle=True)   # 数据加载器
+    
     model.train()
     n_iter=0
     for epoch in range(EPOCH):
