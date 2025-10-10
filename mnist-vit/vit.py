@@ -7,6 +7,7 @@ import os
 DEBUG_INIT = os.getenv('DEBUG_INIT', '0') == '1'
 
 class ViT(nn.Module):
+    print("进入 ViT 类定义")
     def __init__(self,emb_size=16):
         super().__init__()
         
@@ -38,71 +39,72 @@ class ViT(nn.Module):
         self.cls_linear=nn.Linear(in_features=emb_size,out_features=10) # 手写数字10分类
         
     def forward(self,x): # (batch_size,channel=1,width=28,height=28)
+        print("进入 ViT 前向传播")
         # 🔍 断点6：查看输入图像shape
         print(f"输入 x.shape: {x.shape}")  # 应该是 (batch, 1, 28, 28)
         pdb.set_trace()
-        
+        print("9.1")
         # 步骤1: 卷积切分成patch
         x=self.conv(x) # (batch_size,channel=16,width=7,height=7)
         
         # 🔍 断点7：查看卷积后的patch
         print(f"卷积后 x.shape: {x.shape}")  # 应该是 (batch, 16, 7, 7)
         pdb.set_trace()
-        
+        print("9.2")
         # 步骤2: 重塑为序列形式
         x=x.view(x.size(0),x.size(1),self.patch_count**2)   # (batch_size,channel=16,seq_len=49)
         
         # 🔍 断点8：查看view后的shape
         print(f"view后 x.shape: {x.shape}")  # 应该是 (batch, 16, 49)
         pdb.set_trace()
-        
+        print("9.3")
         x=x.permute(0,2,1)  # (batch_size,seq_len=49,channel=16)
         
         # 🔍 断点9：查看permute后，序列形式
         print(f"permute后 x.shape: {x.shape}")  # 应该是 (batch, 49, 16)
         pdb.set_trace()
-        
+        print("9.4")
         # 步骤3: patch embedding
         x=self.patch_emb(x)   # (batch_size,seq_len=49,emb_size)
         
         # 🔍 断点10：查看embedding后的特征
         print(f"patch_emb后 x.shape: {x.shape}")  # 应该是 (batch, 49, emb_size)
         pdb.set_trace()
-        
+        print("9.5")
         # 步骤4: 添加CLS token
         cls_token=self.cls_token.expand(x.size(0),1,x.size(2))  # (batch_size,1,emb_size)
         
         # 🔍 断点11：查看CLS token
         print(f"cls_token.shape: {cls_token.shape}")  # 应该是 (batch, 1, emb_size)
         pdb.set_trace()
-        
+        print("9.6")
         x=torch.cat((cls_token,x),dim=1)   # add [cls] token
         
         # 🔍 断点12：查看拼接CLS后的序列
         print(f"拼接CLS后 x.shape: {x.shape}")  # 应该是 (batch, 50, emb_size)
         pdb.set_trace()
-        
+        print("9.7")
         # 步骤5: 添加位置编码
         x=self.pos_emb+x
         
         # 🔍 断点13：查看加位置编码后
         print(f"加位置编码后 x.shape: {x.shape}")  # 应该是 (batch, 50, emb_size)
         pdb.set_trace()
-        
+        print("9.8")
         # 步骤6: Transformer编码
         y=self.tranformer_enc(x) # 不涉及padding，所以不需要mask
         
         # 🔍 断点14：查看Transformer输出
         print(f"Transformer后 y.shape: {y.shape}")  # 应该是 (batch, 50, emb_size)
         pdb.set_trace()
-        
+        print("9.9")
         # 步骤7: 取CLS token输出做分类
         cls_output = y[:,0,:]  # 取第一个token (CLS)
         
         # 🔍 断点15：查看CLS输出
         print(f"CLS输出 cls_output.shape: {cls_output.shape}")  # 应该是 (batch, emb_size)
         pdb.set_trace()
-        
+        print("9.10")
         logits = self.cls_linear(cls_output)
         
         # 🔍 断点16：查看最终分类logits
